@@ -20,6 +20,7 @@ func (app *application) routes() http.Handler {
 	// USER ROUTES
 	mux.HandleFunc("POST /add_user", app.addUser)
 	mux.HandleFunc("POST /add_user_roles/{sheet_id}", app.addUserRole)
+	mux.HandleFunc("DELETE /remove_roles/{sheet_id}", app.removeUserRole)
 
 	// mux.HandleFunc("/health", s.healthHandler)
 

@@ -28,6 +28,7 @@ type application struct {
 	sheets *models.SheetModel
 	users  *models.UserModel
 	roles  *models.UserRoleModel
+	auth   *models.AuthModel
 }
 
 func main() {
@@ -52,6 +53,7 @@ func main() {
 		sheets: &models.SheetModel{DB: db},
 		users:  &models.UserModel{DB: db},
 		roles:  &models.UserRoleModel{DB: db},
+		auth:   &models.AuthModel{DB: db},
 	}
 
 	srv := &http.Server{

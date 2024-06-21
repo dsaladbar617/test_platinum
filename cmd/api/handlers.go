@@ -149,8 +149,6 @@ func (app *application) addUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(role, sheetID)
-
 	err = app.roles.Insert(role.UserID, sheetID, role.RoleName)
 	if err != nil {
 		app.serveError(w, r, err)
@@ -165,3 +163,41 @@ func (app *application) addUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (app *application) removeUserRole(w http.ResponseWriter, r *http.Request) {
+	var role newUserRole
+
+	sheetID, err := strconv.Atoi(r.PathValue("sheet_id"))
+	if err != nil || sheetID < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&role)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	result, err := app.roles.Delete(role.UserID, sheetID)
+	if err != nil {
+		app.serveError(w, r, err)
+		return
+	}
+
+	fmt.Println(result.RowsAffected())
+
+	resp := make(map[string]string)
+	resp["message"] = "User role removed successfully"
+
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		return
+	}
+
+}
+
+// func (app *application) editUserRole(w http.ResponseWriter, r *http.Request) {
+
+//   if app.auth.CheckAuthLevel()
+// }
