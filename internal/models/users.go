@@ -27,3 +27,15 @@ func (m *UserModel) Insert(manNumber int, name, picture, email, userId string) e
 
 	return nil
 }
+
+func (m *UserModel) GetByID(id int) (User, error) {
+	var u User
+
+	stmt := `SELECT * FROM users WHERE id = $1 LIMIT 1;`
+
+	err := m.DB.QueryRow(stmt, id).Scan(&u)
+	if err != nil {
+		return User{}, err
+	}
+	return u, nil
+}

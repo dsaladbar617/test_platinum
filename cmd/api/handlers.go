@@ -35,7 +35,10 @@ func (app *application) addSheet(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = fmt.Sprintf("Sheet named: %s added successfully", s.Name)
 
-	json.NewEncoder(w).Encode(resp)
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		return
+	}
 }
 
 func (app *application) updateSheet(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +65,10 @@ func (app *application) updateSheet(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = "sheet edited successfully"
 
-	json.NewEncoder(w).Encode(resp)
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		return
+	}
 
 }
 
@@ -79,7 +85,10 @@ func (app *application) getSheetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(s)
+	err = json.NewEncoder(w).Encode(s)
+	if err != nil {
+		return
+	}
 
 }
 
@@ -114,5 +123,45 @@ func (app *application) addUser(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = fmt.Sprintf("User named: %s added successfully", nu.Name)
 
-	json.NewEncoder(w).Encode(resp)
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		return
+	}
+}
+
+type newUserRole struct {
+	UserID   int    `json:"user_id"`
+	RoleName string `json:"role_name"`
+}
+
+func (app *application) addUserRole(w http.ResponseWriter, r *http.Request) {
+	var role newUserRole
+
+	sheetID, err := strconv.Atoi(r.PathValue("sheet_id"))
+	if err != nil || sheetID < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&role)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println(role, sheetID)
+
+	err = app.roles.Insert(role.UserID, sheetID, role.RoleName)
+	if err != nil {
+		app.serveError(w, r, err)
+		return
+	}
+
+	resp := make(map[string]string)
+	resp["message"] = "User role added successfully"
+
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		return
+	}
 }

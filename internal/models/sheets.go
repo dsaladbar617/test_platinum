@@ -29,7 +29,7 @@ func (m *SheetModel) Insert(name, shortName, templates string) error {
 
 func (m *SheetModel) Update(id int, name, shortName, templates string) error {
 
-	stmt := `UPDATE SHEETS SET
+	stmt := `UPDATE sheets SET
   name = COALESCE(NULLIF($2,''), name),
   short_name = COALESCE(NULLIF($3,''), short_name),
   templates = COALESCE(NULLIF($4,''), templates)

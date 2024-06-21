@@ -18,7 +18,7 @@ var (
 	database = os.Getenv("DB_DATABASE")
 	password = os.Getenv("DB_PASSWORD")
 	username = os.Getenv("DB_USERNAME")
-	db_port  = os.Getenv("DB_PORT")
+	port     = os.Getenv("DB_PORT")
 	host     = os.Getenv("DB_HOST")
 	addr     = os.Getenv("PORT")
 )
@@ -27,11 +27,12 @@ type application struct {
 	logger *slog.Logger
 	sheets *models.SheetModel
 	users  *models.UserModel
+	roles  *models.UserRoleModel
 }
 
 func main() {
 
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, db_port, database)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
 
 	fmt.Println(connStr)
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -50,6 +51,7 @@ func main() {
 		logger: logger,
 		sheets: &models.SheetModel{DB: db},
 		users:  &models.UserModel{DB: db},
+		roles:  &models.UserRoleModel{DB: db},
 	}
 
 	srv := &http.Server{
